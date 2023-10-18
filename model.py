@@ -15,6 +15,7 @@ from functional import mish
 
 args = config()
 set_seed()
+
 # ChebyGCN written by younghanSon
 
 class myChebConv(torch.nn.Module):
@@ -78,18 +79,10 @@ class myGraphAE(torch.nn.Module): # pretraining GAE
         self.gconv1 = myChebConv(in_channels=args.g_channels[0]+1, out_channels=args.g_channels[1], K=2)
         self.gconv2 = myChebConv(in_channels=args.g_channels[1], out_channels=args.g_channels[2], K=2)
         self.linear = nn.Linear(in_features=112 * args.g_channels[2], out_features=112 * 112)
-        # self.fc1 = nn.Linear(in_features=112 * args.e_channels[2], out_features= 112 * args.e_channels[2])
-        # self.fc2 = nn.Linear(in_features=112 * args.e_channels[2], out_features=112 * args.e_channels[2])
         self.act = mish
         self.tanh = nn.Tanh()
         self.embedding = nn.Embedding(2, 112)  # label embedding
         self.diag_mask = torch.eye(112, 112, dtype=torch.bool)  # set diagonal to one
-
-    # def reparametrize(self, mu, logvar):
-    #     std = torch.exp(0.5 * logvar)
-    #     eps = torch.randn_like(std)
-    #     return mu + std * eps
-
 
     def forward(self, x, edge_index, label = None):
         label = self.embedding(label)
@@ -97,11 +90,6 @@ class myGraphAE(torch.nn.Module): # pretraining GAE
         x = torch.cat([x, label], dim=2)
         x = self.act(self.econv1(x, edge_index))
         x = self.act(self.econv2(x, edge_index))
-        # x = x.reshape((-1, 112 * args.e_channels[2]))
-        # mu = self.act(self.fc1(x))
-        # logvar = self.act(self.fc2(x))
-        # z = self.reparametrize(mu, logvar)
-        # x = z.reshape((-1,112, args.e_channels[2]))
         x = torch.cat([x, label], dim=2)
         x = self.act(self.gconv1(x, edge_index))
         x = self.act(self.gconv2(x, edge_index))
@@ -115,7 +103,7 @@ class myGraphAE(torch.nn.Module): # pretraining GAE
         for s in range(x.size(0)):  # set diagonal to one
             x[s][self.diag_mask] = 1.0
 
-        x = x.reshape((-1, 112, 112))  # reshape [len(train_files)*112, 112] -> fake FC matrix 생성
+        x = x.reshape((-1, 112, 112))
 
         return x
 
@@ -125,7 +113,6 @@ class Generator(torch.nn.Module): # triple gan generator
         super(Generator, self).__init__()
         self.gconv1 = myChebConv(in_channels=args.g_channels[0]+1, out_channels=args.g_channels[1], K=2)
         self.gconv2 = myChebConv(in_channels=args.g_channels[1], out_channels=args.g_channels[2], K=2)
-        # self.pre = nn.Linear(in_features=112 * (args.g_channels[0]), out_features=112 * (args.g_channels[0]))
         self.li1 = nn.Linear(in_features=112 * args.g_channels[2], out_features=112 * 112)
         self.act = mish
         self.tanh = nn.Tanh()
@@ -133,9 +120,6 @@ class Generator(torch.nn.Module): # triple gan generator
         self.embedding = nn.Embedding(2,112) #label embedding
 
     def forward(self, x, edge_index, label):
-        # x = x.reshape(-1, 112 * (args.g_channels[0]))
-        # x = self.act(self.pre(x))
-        # x = x.reshape(-1, 112, (args.g_channels[0]))
         label = self.embedding(label)
         label = label.reshape((-1, 112, 1))
         x = torch.cat([x,label],dim=2)
@@ -152,7 +136,7 @@ class Generator(torch.nn.Module): # triple gan generator
         for s in range(x.size(0)):  # set diagonal to one
             x[s][self.diag_mask] = 1.0
 
-        x = x.reshape((-1, 112, 112))  # reshape [len(train_files)*112, 112] -> fake FC matrix 생성
+        x = x.reshape((-1, 112, 112))  # reshape [len(train_files)*112, 112] -> fake FC matrix
 
         return x
 
