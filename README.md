@@ -2,7 +2,7 @@
 # GC-GAN: Graph Convolutional Network based conditonal Generative Adversarial Network with Class-Aware Discriminator
 
 ## Overview
-We introduced a novel GCN-based Conditional GAN model that generates representative and realistic synthetic FC, aiming to provide a more precise and robust MDD diagnosis. 
+We introduce a novel GCN-based Conditional GAN model that generates representative and realistic synthetic FC, aiming to provide a more precise and robust MDD diagnosis. 
 By integrating GCN architecture into our GAN model, our framework demonstrated the capability to accurately capture the complex topology characteristics and intricate patterns present in FC. 
 Additionally, the class-aware discriminator further enhanced the quality and effectiveness of synthetic FC generation in GC-GAN framework.
 Furthermore, we introduced a topology refinement technique that optimizes the graph structure using the augmented synthetic FC, thereby improving the performance of MDD diagnosis.
