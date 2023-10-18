@@ -2,6 +2,7 @@
 # GC-GAN: Graph Convolutional Network based conditonal Generative Adversarial Network with Class-Aware Discriminator
 
 ## Overview
+
 We introduce a novel GCN-based Conditional GAN model that generates representative and realistic synthetic FC, aiming to provide a more precise and robust MDD diagnosis. 
 By integrating GCN architecture into our GAN model, our framework demonstrated the capability to accurately capture the complex topology characteristics and intricate patterns present in FC. 
 Additionally, the class-aware discriminator further enhanced the quality and effectiveness of synthetic FC generation in GC-GAN framework.
@@ -66,4 +67,9 @@ pip install -r requirements.txt
 | Classifier Loss function| -                 | Cross entropy loss  | -                   | -                   |
 | Gradient Penalty ($\lambda$) | -          | 10                  | -                   | -                   |
 | Decrease ratio of $\alpha$  | -             | -                   | -                   | 0.995               |
+
+## Acknowledgement
+
+This work was supported by Institute of Information \& communications Technology Planning \& Evaluation (IITP) grant funded by the Korea government(MSIT) (No. 2019-0-00079, Artificial Intelligence Graduate School Program(Korea University), No. 2022-0-00871, Development of AI Autonomy and Knowledge Enhancement for AI Agent Collaboration), and the National Research Foundation of Korea (NRF) grant funded by the Korea government (MSIT) (No. RS202300212498).
+
 
