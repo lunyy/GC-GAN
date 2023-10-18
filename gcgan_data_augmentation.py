@@ -1,4 +1,3 @@
-# PGTR-GAN
 # label = 0 : real nc, label = 1 : real mdd, label = 2 : fake nc, label = 3 : fake mdd
 
 import os
