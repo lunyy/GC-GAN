@@ -15,8 +15,8 @@ Furthermore, we introduced a topology refinement technique that optimizes the gr
 - gcgan_ae.py : gcn autoencoder for generator
 - gcgan_baseline.py : gcn classifier for baseline classifier and discriminator
 - gcgan_train.py : gc-gan model
-- gcgan_dataaugmenation.py : data augmentation
-- gcgan_topologyrefinement.py : topology refinement
+- gcgan_data_augmenation.py : data augmentation
+- gcgan_topology_refinement.py : topology refinement
 - mrmr_topology.py : mrmr feature selection algorithm based topology creation
 - graph_utils.py : graph model function
 - utils.py : acc,sen,spec function
