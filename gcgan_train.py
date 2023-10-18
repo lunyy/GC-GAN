@@ -93,7 +93,7 @@ def train_gan(fold,gen_no):
 
     step_size = (len(real_filenames) // args.gan_batch_size)
 
-    for epoch in range(1,2):
+    for epoch in range(1,1001):
 
         # label stack
         c_class = []
@@ -129,7 +129,7 @@ def train_gan(fold,gen_no):
 
 
             # fake data generation
-            noise = np.random.normal(0, 1, (len(batch_mask), 112, args.z_dim))  # noise shape [381, 112, 64]
+            noise = np.random.normal(0, 1, (len(batch_mask), 112, args.z_dim))
             [gen_data, gen_edge, gen_label] = load_fake_data(fold=fold, data_filenames=real_filenames[batch_mask],fixed_noise=noise, timestamp=args.timestamp, pseudo_epoch = gen_no-1)
             fake_x = torch.FloatTensor(gen_data).to(args.device)
             fake_edge_index = torch.LongTensor(gen_edge).to(args.device)
