@@ -14,7 +14,7 @@ Furthermore, we introduced a topology refinement technique that optimizes the gr
 - load_data.py : load data
 - model.py : gcn based model arichtecture
 - gcgan_ae.py : gcn autoencoder for generator
-- gcgan_baseline.py : gcn classifier for baseline classifier and discriminator
+- gnn_baseline.py : gcn classifier for baseline classifier and discriminator
 - gcgan_train.py : gc-gan model
 - gcgan_data_augmenation.py : data augmentation
 - gcgan_topology_refinement.py : topology refinement
