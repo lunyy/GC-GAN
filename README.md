@@ -48,7 +48,7 @@ pip install -r requirements.txt
 ```
 
 ## Hyperparameters
-| Hyperparameters         | SSGAN               | WGAN-GP             | ACGAN               | GC-GAN(ours)        |
+| Hyperparameters         | SSGAN[link](https://www.sciencedirect.com/science/article/pii/S0165027020301795)              | WGAN-GP             | ACGAN               | GC-GAN(ours)        |
 |------------------------|---------------------|---------------------|---------------------|---------------------|
 | Training Epochs        | 1000                | 500                 | 1000                | 1000                |
 | Batch size             | 100                 | 100                 | 100                 | 100                 |
