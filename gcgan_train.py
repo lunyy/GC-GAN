@@ -1,3 +1,7 @@
+"""
+Graph-based Conditional Generative Adversarial Network with class-aware Discriminator (GC-GAN)
+"""
+
 import os
 import time
 import torch
@@ -46,7 +50,7 @@ def train_gan(fold,gen_no):
         generator.to(args.device)
         discriminator.to(args.device)
 
-    # # load GAN's initial weight
+    # load GAN's initial weight
     # generator.load_state_dict(torch.load('GraphAE/Model/mrmr_seed_{}_S20/GAE_model_{}_final.pth'.format(args.seed, fold), map_location=args.device), strict=False)
     # discriminator.load_state_dict(torch.load('GCN/Model/mrmr_seed_{}_S20/GCN_model_{}_final.pth'.format(args.seed, fold), map_location=args.device), strict=False)
 
@@ -202,7 +206,10 @@ def train_gan(fold,gen_no):
     finish_log = "======== GAN Training finished! ======== \t timestamp: {} \t fold : {} \t".format(args.timestamp, fold)
     print(finish_log)
 
+
 def check_image(fake_data,fold):
+    """FC visualization"""
+    
     fake_data = fake_data.cpu().detach().numpy()
     print(fake_data.shape[0])
     if fake_data.shape[0] > 10 : sample = 10
