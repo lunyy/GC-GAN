@@ -1,4 +1,5 @@
-# label = 0 : real nc, label = 1 : real mdd, label = 2 : fake nc, label = 3 : fake mdd
+""" GC-GAN w/ TR """
+
 import os
 import time
 import torch
@@ -18,9 +19,6 @@ from graphsage_baseline import Single_GraphSAGE
 
 # load hyper parameter
 args = config()
-
-# make TSNE directory
-os.mkdir('GAN/TSNE/tsne{}'.format(args.timestamp))
 
 def generate_pseudo_data(fold,timestamp,gen_no):
 
@@ -117,60 +115,6 @@ def generate_pseudo_data(fold,timestamp,gen_no):
     generated_data = torch.FloatTensor(generated_data).to(args.device)
     generated_label = torch.LongTensor(generated_label).to(args.device)
 
-    if args.load_data == 1:
-        real_filenames = load_data_list(fold=fold, data_type="train")
-        if args.gan_type == "semi":
-            generated_data = np.load('SemiGAN/Pseudo_data/gnn_semi_{}(sota)/pseudo_data_{}.npy'.format(args.seed, fold))
-            generated_label = np.load('SemiGAN/Pseudo_data/gnn_semi_{}(sota)/pseudo_label_{}.npy'.format(args.seed, fold))
-
-            generated_data = torch.FloatTensor(generated_data).to(args.device)
-            generated_label = torch.LongTensor(generated_label).to(args.device)
-
-        elif args.gan_type == "brainnetcnn":
-            generated_data = np.load('BrainnetCNN/Pseudo_data/BrainNet_seed_{}(sota)/pseudo_data_{}.npy'.format(args.seed, fold))
-            generated_label = np.load('BrainnetCNN/Pseudo_data/BrainNet_seed_{}(sota)/pseudo_label_{}.npy'.format(args.seed, fold))
-
-            generated_data = torch.FloatTensor(generated_data).to(args.device).squeeze()
-            generated_label = torch.LongTensor(generated_label).to(args.device)
-
-        elif args.gan_type == "dnn":
-            generated_fc = np.load('DNN/Pseudo_data/dnn_seed_{}(sota)/pseudo_data_{}.npy'.format(args.seed, fold))
-            generated = np.ones((112, 112))
-            r, c = np.triu_indices(112, 1)
-            for n in range(generated_fc.shape[0]):
-                generated[r, c] = generated_fc[n]
-                generated[c, r] = generated_fc[n]
-                if n == 0:
-                    generated_data = [generated]
-                else:
-                    generated_data = np.concatenate((generated_data, [generated]), axis=0)
-
-            generated_label = np.load('DNN/Pseudo_data/dnn_seed_{}(sota)/pseudo_label_{}.npy'.format(args.seed, fold))
-
-            generated_data = torch.FloatTensor(generated_data).to(args.device)
-            generated_label = torch.LongTensor(generated_label).to(args.device)
-
-        elif args.gan_type == "wgan":
-            generated_data = np.load('WGAN-GP/Pseudo_data/wgan_seed_{}(sota)/pseudo_data_{}.npy'.format(args.seed, fold))
-            generated_label = np.load('WGAN-GP/Pseudo_data/wgan_seed_{}(sota)/pseudo_label_{}.npy'.format(args.seed, fold))
-
-            generated_data = torch.FloatTensor(generated_data).to(args.device)
-            generated_label = torch.LongTensor(generated_label).to(args.device)
-
-        elif args.gan_type == "dnngnn":
-            generated_data = np.load('DNNGNN/Pseudo_data/dnngnn_seed_{}_2/pseudo_data_{}.npy'.format(args.seed, fold))
-            generated_label = np.load('DNNGNN/Pseudo_data/dnngnn_seed_{}_2/pseudo_label_{}.npy'.format(args.seed, fold))
-
-            generated_data = torch.FloatTensor(generated_data).to(args.device)
-            generated_label = torch.LongTensor(generated_label).to(args.device)
-
-        elif args.gan_type == "acgan":
-            generated_data = np.load('ACGAN/Pseudo_data/acgan_seed_{}(sota)/pseudo_data_{}.npy'.format(args.seed, fold))
-            generated_label = np.load('ACGAN/Pseudo_data/acgan_seed_{}(sota)/pseudo_label_{}.npy'.format(args.seed, fold))
-
-            generated_data = torch.FloatTensor(generated_data).to(args.device)
-            generated_label = torch.LongTensor(generated_label).to(args.device)
-
     [batch_real_x, batch_real_edge_index, batch_real_label] = load_real_data(fold=fold, data_filenames=real_filenames, timestamp=args.timestamp)
     pseudo_data = torch.FloatTensor(np.concatenate([batch_real_x, generated_data.cpu().detach().numpy()], axis=0)).to(args.device)
     pseudo_label = torch.LongTensor(np.concatenate([batch_real_label, generated_label.cpu().detach().numpy()], axis=0)).to(args.device)
@@ -180,7 +124,8 @@ def generate_pseudo_data(fold,timestamp,gen_no):
 
     [_, real_edge, _] = load_graph_data(fold=fold, data_filenames=real_filenames, timestamp=args.timestamp, pseudo_epoch=gen_no)
     pseudo_edge_index = torch.FloatTensor(real_edge).to(args.device)
-    for e in range(1, 4):
+    
+    for e in range(1, 3):
         pseudo_edge_index = torch.cat([pseudo_edge_index, pseudo_edge_index[:generated_data.shape[0]]])
         real_edge_index = torch.cat([real_edge_index, real_edge_index[:generated_data.shape[0]]])
 
@@ -192,26 +137,16 @@ def train_classifier(fold,train_x, train_edge_index, train_label,gen_no):
 
     print("============Classifier Training Start ! ============")
 
-    if args.gnn_type == "GAT":
-        classifier = Single_GAT().to(args.device)
-    elif args.gnn_type == "GraphSAGE":
-        classifier = Single_GraphSAGE().to(args.device)
-    else:
-        classifier = Classifier().to(args.device)
+
+    classifier = Classifier().to(args.device)
 
     c_weight_decay = args.c_weight_decay
     batch_size = args.batch_size
 
-    if args.gnn_type == "GAT":
-        classifier.load_state_dict(torch.load('GAT/Model/model_seed_{}/GAT_model_{}_init.pth'.format(args.seed, fold), map_location=args.device), strict=True)  # weight initialize
-    elif args.gnn_type == "GraphSAGE":
-        classifier.load_state_dict(torch.load('GraphSAGE/Model/model_seed_{}/GraphSAGE_model_{}_init.pth'.format(args.seed, fold), map_location=args.device), strict=True)  # weight initialize
-    else:
-        if args.ex_type == "Main":
-            classifier.load_state_dict(torch.load('GCN/Model/model_seed_{}/GCN_model_{}_init.pth'.format(args.seed,fold),map_location=args.device), strict=True) # weight initialize
-        elif args.ex_type == "Single":
-            classifier.load_state_dict(torch.load('GCN/Model/model_seed_{}_S20/GCN_model_{}_init.pth'.format(args.seed, fold), map_location=args.device), strict=True)  # weight initialize
-
+    if args.ex_type == "Main":
+        classifier.load_state_dict(torch.load('GCN/Model/model_seed_{}/GCN_model_{}_init.pth'.format(args.seed,fold),map_location=args.device), strict=True) # weight initialize
+    elif args.ex_type == "Single":
+        classifier.load_state_dict(torch.load('GCN/Model/model_seed_{}_S20/GCN_model_{}_init.pth'.format(args.seed, fold), map_location=args.device), strict=True)  # weight initialize
 
     optimizer_c = torch.optim.Adam(classifier.parameters(), lr=args.lr, weight_decay=c_weight_decay, betas=(0.5, 0.9))
     scheduler_c = torch.optim.lr_scheduler.ExponentialLR(optimizer_c, gamma=0.998)
@@ -231,7 +166,7 @@ def train_classifier(fold,train_x, train_edge_index, train_label,gen_no):
 
     step_size = (train_x.shape[0]//batch_size)
 
-    for epoch in range(1,2):
+    for epoch in range(1,2001):
         out_stack = []
         label_stack = []
         c_loss = []
@@ -365,7 +300,6 @@ if __name__ == "__main__":
         f1, pseudo_data, pseudo_edge_index, pseudo_label = generate_pseudo_data(fold,args.timestamp,1)
         train_classifier(fold, pseudo_data, pseudo_edge_index, pseudo_label,1)
 
-
     with open('GAN/Results_dgan/{}/model{}/cross_val_result{}_{}.csv'.format(args.edge_type,args.timestamp, args.timestamp,1), 'w') as f:
         f.write('fold,acc,sen,spec,f1\n')
 
@@ -386,8 +320,3 @@ if __name__ == "__main__":
     with open('GAN/Results_dgan/{}/model{}/cross_val_result{}_{}.csv'.format(args.edge_type,args.timestamp, args.timestamp, 1), 'a') as f:
             f.write('avg,{:.2f},{:.2f},{:.2f},{:.2f}\n'.format(np.mean(total_result[0]) * 100, np.mean(total_result[1]) * 100, np.mean(total_result[2]) * 100, np.mean(total_result[3]) * 100))
             f.write('std,{:.2f},{:.2f},{:.2f},{:.2f}'.format(np.nanstd(total_result[0], ddof=1) * 100, np.nanstd(total_result[1], ddof=1) * 100, np.nanstd(total_result[2], ddof=1) * 100, np.nanstd(total_result[3], ddof=1) * 100))
-
-
-
-
-
