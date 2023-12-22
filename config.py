@@ -33,19 +33,18 @@ class config():
         parser.add_argument('--betas', default=(0.5, 0.9), type=tuple, help='adam betas')
         parser.add_argument("--momentum", default=0.9, type=float, help="optimizer momentum - SGD, MADGRAD")
         parser.add_argument("--gamma", default=0.998, type=float, help="gamma for lr learning")
-        parser.add_argument("--mse", default=0.995, type=float, help="gamma for lr learning")
-        parser.add_argument("--info_gain_weight", default=(0.52,0.48), type=list, help="Results gain weight")  # 0 : NC   1: MDD_Data, MDD가 약간 더 많음, 안써도 될거 같음, 2021.5.6 살짝 수정 필요 383->381
+        parser.add_argument("--mse", default=0.995, type=float, help="mse for lr learning")
+        parser.add_argument("--info_gain_weight", default=(0.52,0.48), type=list, help="Results gain weight")
 
         # gan
         parser.add_argument("--gen_no", default=1, type=int, help="generation iteration")
         parser.add_argument("--z_dim", default=56, type=int, help="Gaussian noise dim")
         parser.add_argument('--pseudo_size', default=1, type=float, help='pseudo_data_size')
-        parser.add_argument("--alpha", default=0.9, type=float, help="confidence score")
         parser.add_argument("--load_data", default=0, type=float, help="load saved generated data")
-        parser.add_argument("--p_value", default=0.1, type=float, help="t-test  pvalue")
+        parser.add_argument("--p_value", default=0.1, type=float, help="t-test pvalue")
         parser.add_argument("--edge_type", default="mrmr", type=str, help="edge type")
-        parser.add_argument("--gnn_type", default="GCN", type=str, help="data type")
-        parser.add_argument("--gan_type", default="semi", type=str, help="data type")
+        parser.add_argument("--gnn_type", default="GCN", type=str, help="gnn type")
+        parser.add_argument("--gan_type", default="semi", type=str, help="gan type")
         parser.add_argument("--ex_type", default = "Main", type=str, help="experiment type")
         parser.add_argument("--site", default="S20", type=str, help="MDD site")
 
@@ -89,7 +88,6 @@ class config():
 
         # GAN
         self.z_dim = self.args.z_dim
-        self.alpha = self.args.alpha
         self.load_data = self.args.load_data
         self.p_value = self.args.p_value
         self.edge_type = self.args.edge_type
