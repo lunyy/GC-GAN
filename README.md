@@ -1,5 +1,5 @@
 
-# [GC-GAN: Graph Convolutional Network based conditonal Generative Adversarial Network with Class-Aware Discriminator](https://ieeexplore.ieee.org/document/10349934)
+# [GC-GAN: Graph Convolutional Network based conditional Generative Adversarial Network with Class-Aware Discriminator](https://ieeexplore.ieee.org/document/10349934)
 
 ## Overview
 
